@@ -5,7 +5,7 @@ quantumML
 [![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/quantumML/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/quantumML/branch/master)
 
 
-quantumML is 
+quantumML is an open-source Python library for interacting with the materialsweb.org databases. 
 
 ### Copyright
 
