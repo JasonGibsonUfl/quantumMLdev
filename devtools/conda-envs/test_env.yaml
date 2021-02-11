@@ -18,7 +18,7 @@ dependencies:
   - ase
   - dscribe
   - pymatgen
-  - sklearn
+  - scikit-learn
 
     # Pip-only installs
   #- pip:
