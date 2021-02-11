@@ -6,7 +6,7 @@ import numpy as np
 from dscribe.descriptors import SOAP
 from sklearn.preprocessing import StandardScaler
 
-def get_soap(file, rcut = 8, nmax = 6, lmax = 8, normalize = True):
+def get_soap(file, rcut = 6, nmax = 8, lmax = 6, normalize = True):
     """Initialize the SOAP module from dscribe package and calculate the soap descriptor
     Parameters
     ----------
@@ -24,6 +24,8 @@ def get_soap(file, rcut = 8, nmax = 6, lmax = 8, normalize = True):
     -------
     descriptor : np.ndarray
         returns array of SOAP descriptors
+
+    todo: Normalize is not functioning as desired
     """
     structure = vasp.read_vasp(file)
     descriptor_gen = SOAP(
@@ -38,8 +40,7 @@ def get_soap(file, rcut = 8, nmax = 6, lmax = 8, normalize = True):
     )
     descriptor = descriptor_gen.create(structure)
     if normalize:
-        scaler = StandardScaler().fit(descriptor)
-        descriptor = scaler.transform(descriptor)
+        descriptor = StandardScaler().fit_transform(descriptor)
 
     return descriptor
 
