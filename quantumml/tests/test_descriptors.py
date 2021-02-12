@@ -10,7 +10,7 @@ from .test_data import *
 def test_get_soap():
 
     assert np.allclose(
-        quantumml.decsriptors.get_soap(
+        quantumml.descriptors.get_soap(
             "quantumml/tests/test_data/POSCAR", normalize=False
         ),
         soap_output,
