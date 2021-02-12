@@ -7,6 +7,18 @@ quantumML
 
 quantumML is an open-source Python library for interacting with the materialsweb.org databases. 
 
+This repository is currently under development. To do a developmental install, download this repository and type
+
+`pip install -e .`
+
+in the repository directory.
+
+This package requires the following:
+  - numpy
+  - ase
+  - dscribe
+  - pymatgen
+  - scikit-learn
 ### Copyright
 
 Copyright (c) 2021, Jason Gibson
