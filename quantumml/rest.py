@@ -68,6 +68,7 @@ class MWRester(object):
         name=None,
     ):
         """
+        todo: add support for elements and name
         Method to that queries materialsweb database and returns a list of dictionaries of calculations that
         fit the querries parameters. Additionally
         Parameters

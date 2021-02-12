@@ -5,7 +5,7 @@ quantumML is
 
 # Add imports here
 from .rest import *
-from .decsriptors import *
+from .descriptors import *
 
 # Handle versioneer
 from ._version import get_versions
