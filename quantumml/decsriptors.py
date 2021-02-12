@@ -6,7 +6,8 @@ import numpy as np
 from dscribe.descriptors import SOAP
 from sklearn.preprocessing import StandardScaler
 
-def get_soap(file, rcut = 6, nmax = 8, lmax = 6, normalize = True):
+
+def get_soap(file, rcut=6, nmax=8, lmax=6, normalize=True):
     """Initialize the SOAP module from dscribe package and calculate the soap descriptor
     Parameters
     ----------
@@ -34,13 +35,12 @@ def get_soap(file, rcut = 6, nmax = 8, lmax = 6, normalize = True):
         rcut=rcut,
         nmax=nmax,
         lmax=lmax,
-        rbf='gto',
+        rbf="gto",
         sigma=0.125,
-        average='inner'
+        average="inner",
     )
     descriptor = descriptor_gen.create(structure)
     if normalize:
         descriptor = StandardScaler().fit_transform(descriptor)
 
     return descriptor
-
