@@ -58,16 +58,26 @@ class MWRester(object):
         """
         Method to that queries materialsweb database and returns a list of dictionaries of calculations that
         fit the querries parameters. Additionally
-        Parameters:
-            band_gap_range (list): List of band gap range e.g. [min, max]
-            formation_energy_range (list): List of formation energy range e.g. [min, max]
-            elements (list): List of str of elements
-            space_group_number (int): space group number
-            dimension (int): dimension as int e.g. 1 2 3
-            crystal_system (str): name of crystal system
-            name (str): name of material e.g. MoS2
-        Returns:
-            results: List of results matching quire parameters
+        Parameters
+        ----------
+        band_gap_range : list
+        List of band gap range e.g. [min, max]
+        formation_energy_range : list
+            List of formation energy range e.g. [min, max]
+        elements : list
+        List of str of elements
+        space_group_number : int
+            space group number
+        dimension : int
+            dimension as int e.g. 1 2 3
+        crystal_system : str
+            name of crystal system
+        name : str
+            name of material e.g. MoS2
+        Returns
+        -------
+        results : list
+            List of results matching query parameters
         """
 
         suburl = ""
@@ -102,8 +112,11 @@ class MWRester(object):
     def as_pymatgen_struc(self):
         """
         Method that converts results to list of pymatgen strucutures
-        Returns:
-             struc: List of pymatgen structures
+
+        Returns
+        -------
+        struc : list
+            List of pymatgen structures
         """
         struc = []
         for c in self.results:
@@ -118,6 +131,80 @@ class MWRester(object):
 
         return struc
 
+    def write(self,index=0):
+        '''
+        Writes INCAR, KPOINTS, POSCAR of entry to current directory
+
+        Parameters
+        ----------
+        index : int
+            Index of entry to write files for
+        '''
+        self.write_poscar(index=index)
+        self.write_incar(index=index)
+        self.write_kpoints(index=index)
+
+    def write_all(self=0):
+        '''
+        Creates a directory named by composition for every entry in results. Then, Writes INCAR, KPOINTS,
+        POSCAR of entry to respective directory
+        '''
+        for index in range(0, len(self.results)):
+            dir_name = self.results[index]['composition'].split('/')[-2].replace('%', '')
+            os.mkdir(dir_name)
+            os.chdir(dir_name)
+            self.write_poscar(index=index)
+            self.write_incar(index=index)
+            self.write_kpoints(index=index)
+            os.chdir('..')
+
+    def write_poscar(self,index=0):
+        '''
+        Writes POSCAR of entry to current directory
+
+        Parameters
+        ----------
+        index : int
+            Index of entry to write POSCAR for
+        '''
+        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/POSCAR'
+        file = urllib.request.urlopen(urlp)
+        with open('POSCAR','a') as poscar:
+            for line in file:
+                decoded_line = line.decode("utf-8")
+                poscar.write(decoded_line)
+
+    def write_kpoints(self,index=0):
+        '''
+        Writes KPOINTS of entry to current directory
+
+        Parameters
+        ----------
+        index : int
+            Index of entry to write KPOINT for
+        '''
+        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/KPOINTS'
+        file = urllib.request.urlopen(urlp)
+        with open('KPOINTS','a') as poscar:
+            for line in file:
+                decoded_line = line.decode("utf-8")
+                poscar.write(decoded_line)
+
+    def write_incar(self,index=0):
+        '''
+        Writes INCAR of entry to current directory
+
+        Parameters
+        ----------
+        index : int
+            Index of entry to write INCAR for
+        '''
+        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/INCAR'
+        file = urllib.request.urlopen(urlp)
+        with open('INCAR','a') as poscar:
+            for line in file:
+                decoded_line = line.decode("utf-8")
+                poscar.write(decoded_line)
 
 if __name__ == "__main__":
     # Do something if this file is invoked on its own
