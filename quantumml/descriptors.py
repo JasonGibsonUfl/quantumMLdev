@@ -7,7 +7,7 @@ from dscribe.descriptors import SOAP
 from sklearn.preprocessing import StandardScaler
 
 
-def get_soap(file, rcut=6, nmax=8, lmax=6, normalize=True):
+def get_soap(file, rcut=6, nmax=6, lmax=8, normalize=True):
     """Initialize the SOAP module from dscribe package and calculate the soap descriptor
     Parameters
     ----------

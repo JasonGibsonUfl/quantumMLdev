@@ -9,6 +9,7 @@ class MLModel:
     """
     Base class for pre-trained machine learning model
     todo: Alot needs to be implemented here.
+    todo: Should the MLModel inherit from sklearn?
     todo: 1. mysql database needs to be set up for each mlmodel and the structure need to be determined
     todo: 2. I feel this should be a class but I am not sure how to implement this while using sklearn
     """
