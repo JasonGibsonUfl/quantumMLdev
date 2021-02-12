@@ -37,6 +37,18 @@ class MWRester(object):
     def __str__(self):
         return "%s" % self.results
 
+    def __enter__(self):
+        """
+        Support for "with" context.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Support for "with" context.
+        """
+        self.session.close()
+
     def _make_request(self, sub_url, payload=None, method="GET", mp_decode=True):
         url = self.preamble + sub_url + "/" + self.api_key
         x = urlopen(url)
@@ -139,6 +151,7 @@ class MWRester(object):
         ----------
         index : int
             Index of entry to write files for
+        todo: add unit test
         '''
         self.write_poscar(index=index)
         self.write_incar(index=index)
@@ -148,6 +161,7 @@ class MWRester(object):
         '''
         Creates a directory named by composition for every entry in results. Then, Writes INCAR, KPOINTS,
         POSCAR of entry to respective directory
+        todo: add unit test        
         '''
         for index in range(0, len(self.results)):
             dir_name = self.results[index]['composition'].split('/')[-2].replace('%', '')
@@ -166,6 +180,7 @@ class MWRester(object):
         ----------
         index : int
             Index of entry to write POSCAR for
+        todo: add unit test
         '''
         urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/POSCAR'
         file = urllib.request.urlopen(urlp)
@@ -182,6 +197,7 @@ class MWRester(object):
         ----------
         index : int
             Index of entry to write KPOINT for
+        todo: add unit test
         '''
         urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/KPOINTS'
         file = urllib.request.urlopen(urlp)
@@ -198,6 +214,7 @@ class MWRester(object):
         ----------
         index : int
             Index of entry to write INCAR for
+        todo: add unit test
         '''
         urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/INCAR'
         file = urllib.request.urlopen(urlp)
