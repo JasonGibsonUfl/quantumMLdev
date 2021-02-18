@@ -19,6 +19,9 @@ import numpy as np
 
 
 class MWRester(object):
+    """
+
+    """
     results = {}
 
     def __init__(
