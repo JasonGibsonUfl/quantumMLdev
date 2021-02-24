@@ -18,6 +18,55 @@ from sklearn.cluster import KMeans
 import numpy as np
 
 
+class MLRester(object):
+    """
+
+    """
+    results = {}
+
+    def __init__(
+        self, api_key=None, endpoint="http://127.0.0.1:8000/rest/MLModel/?"
+    ):
+        if api_key is not None:
+            self.api_key = api_key
+        else:
+            self.api_key = ""
+        self.preamble = endpoint
+        import requests
+
+        self.session = requests.Session()
+        self.session.headers = {"x-api-key": self.api_key}
+
+    def __str__(self):
+        return "%s" % self.results
+
+    def __enter__(self):
+        """
+        Support for "with" context.
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Support for "with" context.
+        """
+        self.session.close()
+
+    def _make_request(self, sub_url, payload=None, method="GET", mp_decode=True):
+        url = self.preamble + sub_url + "/" + self.api_key
+        x = urlopen(url)
+
+        response = self.session.get(url, verify=True)
+        data = json.loads(response.text)
+        return data
+
+
+    def get_SVR(target_property, elements):
+        sub_url = 'target_property=' + target_property+'&element1=' + elements[0] + '&element2' + elements[1]
+        print(sub_url)
+        self.results = self._make_request(suburl)["results"]
+        return self.results
+
 class MWRester(object):
     """
 
