@@ -18,8 +18,19 @@ class MLModel:
     todo: 2. I feel this should be a class but I am not sure how to implement this while using sklearn
     """
     @staticmethod
-    def rebuild_SVR(model_params):
-        model = pickle.loads(base64.b64decode(model_params['pickle_str']))
+    def rebuild_SVR(query_results):
+        """
+        rebuild sklearn SVR model from query results
+        Parameters
+        ----------
+        query_results : dict
+            results from get_SVR method
+        Returns
+        -------
+        model : sklearn.SVR
+            returns the trained svr model
+        """
+        model = pickle.loads(base64.b64decode(query_results['pickle_str']))
         '''
         model = SVR()
         model.fit(np.array([[1, 1], [1, 2]]), np.array([1, 1]))
