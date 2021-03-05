@@ -5,7 +5,29 @@ from ase.io import vasp
 import numpy as np
 from dscribe.descriptors import SOAP
 from sklearn.preprocessing import StandardScaler
+from pymatgen.io.ase import AseAtomsAdaptor
 
+
+def compute_descriptor(descriptor, structure):
+    '''
+    compute the descriptor for a structure for a pretrained model
+
+    Parameters
+    ----------
+    descriptor : descriptor object
+        descriptor object returned from mlModels.MLModel.rebuild_descriptor
+    structure : pymatgen.Structure
+        pymatgen structure of the material to compute descriptor
+    Returns
+    -------
+    descriptor : np.ndarray
+        returns array of descriptor
+    '''
+
+    adaptor = AseAtomsAdaptor()
+    entry = adaptor.get_atoms(structure)
+    descriptor_raw = descriptor.create(entry)
+    return descriptor_raw
 
 def get_soap(file, rcut=6, nmax=6, lmax=8, normalize=True):
     """Initialize the SOAP module from dscribe package and calculate the soap descriptor
