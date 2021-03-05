@@ -16,17 +16,14 @@ from dscribe.descriptors import SOAP
 from pymatgen.io.vasp import Xdatcar, Oszicar
 from sklearn.cluster import KMeans
 import numpy as np
-
+from .mlModels import MLModel
 
 class MLRester(object):
-    """
+    """"""
 
-    """
     results = {}
 
-    def __init__(
-        self, api_key=None, endpoint="http://127.0.0.1:8000/rest/MLModel/?"
-    ):
+    def __init__(self, api_key=None, endpoint="http://127.0.0.1:8000/rest/"):
         if api_key is not None:
             self.api_key = api_key
         else:
@@ -52,25 +49,37 @@ class MLRester(object):
         """
         self.session.close()
 
-    def _make_request(self, sub_url, payload=None, method="GET", mp_decode=True):
-        url = self.preamble + sub_url + "/" + self.api_key
+    def _make_request(self, sub_url, payload=None, method="GET"):
+        url = self.preamble + sub_url  # + "/" + self.api_key
+        print(url)
         x = urlopen(url)
 
         response = self.session.get(url, verify=True)
         data = json.loads(response.text)
         return data
 
+    def get_SVR(self, target_property, elements, best="test_MAE"):
+        suburl = (
+            "MLModel/?target_property="
+            + target_property
+            + "&element1="
+            + elements[0]
+            + "&element2"
+            + elements[1]
+        )
 
-    def get_SVR(target_property, elements):
-        sub_url = 'target_property=' + target_property+'&element1=' + elements[0] + '&element2' + elements[1]
-        print(sub_url)
-        self.results = self._make_request(suburl)["results"]
-        return self.results
+        self.results = self._make_request(suburl)[0]
+        svr = self.results["svr"][27:]
+        self.results["svr"] = self._make_request(svr)
+        all_params = self._make_request(svr)
+        print(all_params)
+        #model = MLModel().rebuild_SVR(model_params)
+        return all_params
+
 
 class MWRester(object):
-    """
+    """"""
 
-    """
     results = {}
 
     def __init__(
@@ -196,8 +205,8 @@ class MWRester(object):
 
         return struc
 
-    def write(self,index=0):
-        '''
+    def write(self, index=0):
+        """
         Writes INCAR, KPOINTS, POSCAR of entry to current directory
 
         Parameters
@@ -205,28 +214,30 @@ class MWRester(object):
         index : int
             Index of entry to write files for
         todo: add unit test
-        '''
+        """
         self.write_poscar(index=index)
         self.write_incar(index=index)
         self.write_kpoints(index=index)
 
     def write_all(self=0):
-        '''
+        """
         Creates a directory named by composition for every entry in results. Then, Writes INCAR, KPOINTS,
         POSCAR of entry to respective directory
-        todo: add unit test        
-        '''
+        todo: add unit test
+        """
         for index in range(0, len(self.results)):
-            dir_name = self.results[index]['composition'].split('/')[-2].replace('%', '')
+            dir_name = (
+                self.results[index]["composition"].split("/")[-2].replace("%", "")
+            )
             os.mkdir(dir_name)
             os.chdir(dir_name)
             self.write_poscar(index=index)
             self.write_incar(index=index)
             self.write_kpoints(index=index)
-            os.chdir('..')
+            os.chdir("..")
 
-    def write_poscar(self,index=0):
-        '''
+    def write_poscar(self, index=0):
+        """
         Writes POSCAR of entry to current directory
 
         Parameters
@@ -234,16 +245,16 @@ class MWRester(object):
         index : int
             Index of entry to write POSCAR for
         todo: add unit test
-        '''
-        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/POSCAR'
+        """
+        urlp = "http://materialsweb.org/" + self.results[index]["path"][22:] + "/POSCAR"
         file = urllib.request.urlopen(urlp)
-        with open('POSCAR','a') as poscar:
+        with open("POSCAR", "a") as poscar:
             for line in file:
                 decoded_line = line.decode("utf-8")
                 poscar.write(decoded_line)
 
-    def write_kpoints(self,index=0):
-        '''
+    def write_kpoints(self, index=0):
+        """
         Writes KPOINTS of entry to current directory
 
         Parameters
@@ -251,16 +262,18 @@ class MWRester(object):
         index : int
             Index of entry to write KPOINT for
         todo: add unit test
-        '''
-        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/KPOINTS'
+        """
+        urlp = (
+            "http://materialsweb.org/" + self.results[index]["path"][22:] + "/KPOINTS"
+        )
         file = urllib.request.urlopen(urlp)
-        with open('KPOINTS','a') as poscar:
+        with open("KPOINTS", "a") as poscar:
             for line in file:
                 decoded_line = line.decode("utf-8")
                 poscar.write(decoded_line)
 
-    def write_incar(self,index=0):
-        '''
+    def write_incar(self, index=0):
+        """
         Writes INCAR of entry to current directory
 
         Parameters
@@ -268,13 +281,14 @@ class MWRester(object):
         index : int
             Index of entry to write INCAR for
         todo: add unit test
-        '''
-        urlp = 'http://materialsweb.org/'+ self.results[index]['path'][22:] + '/INCAR'
+        """
+        urlp = "http://materialsweb.org/" + self.results[index]["path"][22:] + "/INCAR"
         file = urllib.request.urlopen(urlp)
-        with open('INCAR','a') as poscar:
+        with open("INCAR", "a") as poscar:
             for line in file:
                 decoded_line = line.decode("utf-8")
                 poscar.write(decoded_line)
+
 
 if __name__ == "__main__":
     # Do something if this file is invoked on its own
