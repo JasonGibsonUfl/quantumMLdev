@@ -40,7 +40,7 @@ class MLModel:
 
     @staticmethod
     def rebuild_descriptor(model_params):
-        descriptor_params = model_params['descriptor_parameters']
+        descriptor_params = ast.literal_eval(model_params['descriptor_parameters'])
         if descriptor_params['name'] == 'soap':
             descriptor = SOAP(
                 species = descriptor_params['species'],
