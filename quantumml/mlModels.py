@@ -30,29 +30,48 @@ class MLModel:
         model : sklearn.SVR
             returns the trained svr model
         """
-        model = pickle.loads(base64.b64decode(query_results['pickle_str']))
-        '''
-        model = SVR()
-        model.fit(np.array([[1, 1], [1, 2]]), np.array([1, 1]))
-        params = ast.literal_eval(model_params['parameters'])
-        model.set_params(**params)
-        model._intercept_ = np.array(ast.literal_eval(model_params['intercept']))
-        model._dual_coef_ = np.array(ast.literal_eval(model_params['dual_coef']))
-        model._sparse = bool(model_params['sparse'])
-        model.shape_fit_ = ast.literal_eval(model_params['shape_fit'])
-        model.support_ = np.array(ast.literal_eval(model_params['support']))
-        model.support_vectors_ = np.array(ast.literal_eval(model_params['support_vectors']))
-        model._n_support =np.array(ast.literal_eval(model_params['n_support']))
-        model.probA_ = np.array([])
-        model.probB_ = np.array([])
-        model._gamma = float(model_params['gamma'])
-        '''
+        model = pickle.loads(base64.b64decode(query_results['pickle_str'])) 
         return model
+
+    @staticmethod
+    def rebuild_transformer(query_results):
+        """
+        rebuild data transformer from query results
+        Parameters
+        ----------
+        query_results : dict
+            results from get_SVR method
+        Returns
+        -------
+        scaler : sklearn.StandardScaler
+            returns the fitted sklearn standardscaler model        
+        """
+        scaler = pickle.loads(base64.b64decode(query_results['pickle_str_transformer']))
+
+    @staticmethod
+    def rebuild_structure_list(query_results):
+        pass
+
+    @staticmethod
+    def rebuild_training_targets(query_results):
+        pass
+
+    @staticmethod
+    def rebuild_training_inputs(query_results):
+        pass
 
     @staticmethod
     def rebuild_descriptor(model_params):
         """
-
+        method to reconsruct the descriptor object from query_results
+        Parameters
+        ----------
+        model_params : dict
+            results from get_SCR method
+        Returns
+        -------
+        descriptor : onbject
+            object that can compute the descriptor given a pymatgen structure
         """
         descriptor_params = ast.literal_eval(model_params['descriptor_parameters'])
         if descriptor_params['name'] == 'soap':

@@ -59,6 +59,22 @@ class MLRester(object):
         return data
 
     def get_SVR(self, target_property, elements, best="test_MAE"):
+        """
+        Returns all the parameters of an SVR model for reconstruction
+        Parameters
+        ----------
+        target_property : str
+            Property for model to predict
+        elements : list
+            list of elements in string form e.g. ['Cd', 'Te']
+        best : str
+            metric for evaluating model
+        Returns
+        -------
+        all_params : dict
+            dictionary of query results
+        todo: implement best
+        """
         suburl = (
             "MLModel/?target_property="
             + target_property
