@@ -88,10 +88,31 @@ class MLRester(object):
         svr = self.results["svr"][27:]
         self.results["svr"] = self._make_request(svr)
         all_params = self._make_request(svr)
-        print(all_params)
+        #print(all_params)
         #model = MLModel().rebuild_SVR(model_params)
         return all_params
 
+    def get_data(self,target_property, elements, model):
+        suburl = (
+            "MLModel/?target_property="
+            + target_property
+            + "&element1="
+            + elements[0]
+            + "&element2"
+            + elements[1]
+        )
+
+        self.results = self._make_request(suburl)[0]
+        data = self.results["data"]#[27:]
+        #self.results["svr"] = self._make_request(svr)
+        svr = self.results["svr"][27:]
+        self.results["svr"] = self._make_request(svr)
+        all_params = self._make_request(svr)
+        i = 0
+        for struc in data[1:4]:
+            all_params[i]= (self._make_request(struc[27:]))
+            i += 1
+        return all_params
 
 class MWRester(object):
     """"""

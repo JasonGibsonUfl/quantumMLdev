@@ -8,7 +8,7 @@ import numpy as np
 import ast
 import base64
 from dscribe.descriptors import SOAP
-
+from pymatgen import Structure
 class MLModel:
     """
     Base class for pre-trained machine learning model
@@ -47,18 +47,28 @@ class MLModel:
             returns the fitted sklearn standardscaler model        
         """
         scaler = pickle.loads(base64.b64decode(query_results['pickle_str_transformer']))
+        return scaler
 
     @staticmethod
     def rebuild_structure_list(query_results):
-        pass
+        structure_list = []
+        for i in range(100000):
+            try:
+                structure_list.append(Structure.from_dict(ast.literal_eval(query_results[i]['structure'])))
+            except:
+                return structure_list
+
 
     @staticmethod
-    def rebuild_training_targets(query_results):
-        pass
+    def rebuild_training_targets(query_results, target):
+        def rebuild_structure_list(query_results):
+            target_list = []
+            for i in range(100000):
+                try:
+                    target_list.append(Structure.from_dict(ast.literal_eval(query_results[i][target])))
+                except:
+                    return target_list
 
-    @staticmethod
-    def rebuild_training_inputs(query_results):
-        pass
 
     @staticmethod
     def rebuild_descriptor(model_params):
@@ -104,4 +114,3 @@ class MLModel:
         """
         urlm = "http://materialsweb.org/static/models/" + system + ".sav"
         model = pickle.load(urllib.request.urlopen(urlm))
-        return model
