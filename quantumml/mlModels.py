@@ -51,6 +51,17 @@ class MLModel:
 
     @staticmethod
     def rebuild_structure_list(query_results):
+        """
+        rebuild list of pymatgen structures used for training
+        Parameters
+        ----------
+        query_results : dict
+            results from get_SVR method
+        Returns
+        -------
+        structure_list : List
+            list of pymatgen structures used to train the model
+        """
         structure_list = []
         for i in range(100000):
             try:
@@ -61,6 +72,17 @@ class MLModel:
 
     @staticmethod
     def rebuild_training_targets(query_results, target):
+        """
+        rebuild list of target properties for training
+        Parameters
+        ----------
+        query_results : dict
+            results from get_SVR method
+        Returns
+        -------
+        target_list : List
+            list of target values used to train the model
+        """
         def rebuild_structure_list(query_results):
             target_list = []
             for i in range(100000):

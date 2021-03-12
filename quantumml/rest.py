@@ -19,7 +19,9 @@ import numpy as np
 from .mlModels import MLModel
 
 class MLRester(object):
-    """"""
+    """
+
+    """
 
     results = {}
 
@@ -51,7 +53,7 @@ class MLRester(object):
 
     def _make_request(self, sub_url, payload=None, method="GET"):
         url = self.preamble + sub_url  # + "/" + self.api_key
-        print(url)
+        #print(url)
         x = urlopen(url)
 
         response = self.session.get(url, verify=True)
@@ -92,7 +94,23 @@ class MLRester(object):
         #model = MLModel().rebuild_SVR(model_params)
         return all_params
 
-    def get_data(self,target_property, elements, model):
+    def get_data(self,target_property, elements, model = 'SVR'):
+        """
+        simimlar to get SVR 
+        Parameters
+        ----------
+        target_property : str
+            Property for model to predict
+        elements : list
+            list of elements in string form e.g. ['Cd', 'Te']
+        model : str
+            name of ml model
+        Returns
+        -------
+        all_params : dict
+            dictionary of query results
+        
+        """
         suburl = (
             "MLModel/?target_property="
             + target_property
@@ -109,7 +127,7 @@ class MLRester(object):
         self.results["svr"] = self._make_request(svr)
         all_params = self._make_request(svr)
         i = 0
-        for struc in data[1:4]:
+        for struc in data:
             all_params[i]= (self._make_request(struc[27:]))
             i += 1
         return all_params
