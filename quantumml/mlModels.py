@@ -83,13 +83,15 @@ class MLModel:
         target_list : List
             list of target values used to train the model
         """
-        def rebuild_structure_list(query_results):
-            target_list = []
-            for i in range(100000):
-                try:
-                    target_list.append(Structure.from_dict(ast.literal_eval(query_results[i][target])))
-                except:
-                    return target_list
+        target_list = []
+        print('here')
+        for i in range(100000):
+            try:
+                print(f'i = {i}\t target = {target}')
+                target_list.append(query_results[i][target])
+            except:
+                print(f'i = {i}\t target = {target}')
+                return target_list
 
 
     @staticmethod
