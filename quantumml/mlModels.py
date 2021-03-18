@@ -17,6 +17,11 @@ class MLModel:
     todo: 1. mysql database needs to be set up for each mlmodel and the structure need to be determined
     todo: 2. I feel this should be a class but I am not sure how to implement this while using sklearn
     """
+    def __init__(self, evaluation, target, DOI):
+        self.evaluation = evaluation
+        self.target = target
+        self.DOI = DOI
+
     @staticmethod
     def rebuild_SVR(query_results):
         """
