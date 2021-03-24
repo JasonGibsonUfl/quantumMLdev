@@ -8,7 +8,7 @@ import numpy as np
 import ast
 import base64
 from dscribe.descriptors import SOAP
-from pymatgen import Structure
+from pymatgen.core import Structure
 class MLModel:
     """
     Base class for pre-trained machine learning model
