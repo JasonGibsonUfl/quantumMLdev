@@ -17,6 +17,47 @@ class MLModel:
     todo: 1. mysql database needs to be set up for each mlmodel and the structure need to be determined
     todo: 2. I feel this should be a class but I am not sure how to implement this while using sklearn
     """
+    def __init__(self, evaluation, target, DOI):
+        self.evaluation = evaluation
+        self.target = target
+        self.DOI = DOI
+
+    @staticmethod
+    def read_numpy_field(value, dtype=np.float64):
+        asnp = ast.literal_eval(value)
+        return np.asarray(asnp, dtype=dtype, order='C')
+    
+    @staticmethod
+    def read_svr_parameters(query_results):
+        """
+        method to read the parameters of query results into proper format
+        Parameters
+        ----------
+        query_results : dict
+            results from get_SVR method
+        Returns
+        -------
+        model_params : dict
+            list of all needed components of SVR in proper format
+        """
+        params = ast.literal_eval(query_results['parameters'])
+        intercept = MLModel.read_numpy_field(query_results['intercept'])
+        dual_coef = MLModel.read_numpy_field(query_results['dual_coef'])
+        sparse = bool(query_results['sparse'])
+        shape_fit = ast.literal_eval(query_results['shape_fit'])
+        support = MLModel.read_numpy_field(query_results['support'], dtype=np.int32)
+        support_vectors = MLModel.read_numpy_field(query_results['support_vectors'])
+        n_support = MLModel.read_numpy_field(query_results['n_support'], dtype=np.int32)
+        probA = MLModel.read_numpy_field('[]')
+        probB = MLModel.read_numpy_field('[]')
+        gamma = float(query_results['gamma'])
+
+        model_params = {'params' : params,'intercept' : intercept, 'dual_coef' :dual_coef,
+                        'sparse' : sparse, 'shape_fit' : shape_fit, 'support' : support,
+                        'support_vectors' : support_vectors, 'n_support' : n_support,
+                        'probA' : probA, 'probB' : probB, 'gamma' : gamma}
+        return model_params
+
     @staticmethod
     def rebuild_SVR(query_results):
         """
@@ -30,7 +71,21 @@ class MLModel:
         model : sklearn.SVR
             returns the trained svr model
         """
-        model = pickle.loads(base64.b64decode(query_results['pickle_str'])) 
+        model = SVR()
+        model_params = MLModel.read_svr_parameters(query_results)
+        model.set_params(**model_params['params'])
+        model._intercept_ = model_params['intercept']
+        model._dual_coef_ = model_params['dual_coef']
+        model._sparse = model_params['sparse']
+        model.shape_fit_ = model_params['shape_fit']
+        model.support_ = model_params['support']
+        model.support_vectors_ = model_params['support_vectors']
+        model._n_support = model_params['n_support']
+        model.probA_ = model_params['probA']
+        model.probB_ = model_params['probB']
+        model._gamma = model_params['gamma']
+        print('NEWNEW')
+        #model = pickle.loads(base64.b64decode(query_results['pickle_str']))
         return model
 
     @staticmethod
