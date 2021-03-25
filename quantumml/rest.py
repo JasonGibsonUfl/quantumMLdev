@@ -18,10 +18,9 @@ from sklearn.cluster import KMeans
 import numpy as np
 from .mlModels import MLModel
 
-class MLRester(object):
-    """
 
-    """
+class MLRester(object):
+    """"""
 
     results = {}
 
@@ -53,7 +52,7 @@ class MLRester(object):
 
     def _make_request(self, sub_url, payload=None, method="GET"):
         url = self.preamble + sub_url  # + "/" + self.api_key
-        #print(url)
+        # print(url)
         x = urlopen(url)
 
         response = self.session.get(url, verify=True)
@@ -90,13 +89,13 @@ class MLRester(object):
         svr = self.results["svr"][27:]
         self.results["svr"] = self._make_request(svr)
         all_params = self._make_request(svr)
-        #print(all_params)
-        #model = MLModel().rebuild_SVR(model_params)
+        # print(all_params)
+        # model = MLModel().rebuild_SVR(model_params)
         return all_params
 
-    def get_data(self,target_property, elements, model = 'SVR'):
+    def get_data(self, target_property, elements, model="SVR"):
         """
-        simimlar to get SVR 
+        simimlar to get SVR
         Parameters
         ----------
         target_property : str
@@ -109,7 +108,7 @@ class MLRester(object):
         -------
         all_params : dict
             dictionary of query results
-        
+
         """
         suburl = (
             "MLModel/?target_property="
@@ -121,16 +120,17 @@ class MLRester(object):
         )
 
         self.results = self._make_request(suburl)[0]
-        data = self.results["data"]#[27:]
-        #self.results["svr"] = self._make_request(svr)
+        data = self.results["data"]  # [27:]
+        # self.results["svr"] = self._make_request(svr)
         svr = self.results["svr"][27:]
         self.results["svr"] = self._make_request(svr)
         all_params = self._make_request(svr)
         i = 0
         for struc in data:
-            all_params[i]= (self._make_request(struc[27:]))
+            all_params[i] = self._make_request(struc[27:])
             i += 1
         return all_params
+
 
 class MWRester(object):
     """"""
