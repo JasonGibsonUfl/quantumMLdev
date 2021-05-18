@@ -62,12 +62,7 @@ class MinMaxTransformer(Transformer):
     >>> dataset = transformer.transform_array(X=np.array([5,15,30,29,23]))
     """
 
-    def __init__(
-        self,
-        X: np.ndarray = None,
-        x_max: float = None,
-        x_min: float = None,
-    ):
+    def __init__(self, X: np.ndarray = None, x_max: float = None, x_min: float = None):
         """
         Parameters
         ----------
@@ -88,8 +83,7 @@ class MinMaxTransformer(Transformer):
 
         super(MinMaxTransformer, self).__init__()
 
-    def transform_array(
-        self, X: np.ndarray = None) -> np.ndarray:
+    def transform_array(self, X: np.ndarray = None) -> np.ndarray:
         """
         Parameters
         ----------

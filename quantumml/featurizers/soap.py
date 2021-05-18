@@ -5,6 +5,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 PymatgenStructure = Any
 
+
 class SOAP(MaterialStructureFeaturizer):
     """
     Examples

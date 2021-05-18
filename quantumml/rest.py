@@ -63,12 +63,7 @@ class MLRester(object):
         """
         gets uf3 pair potentials
         """
-        suburl = (
-            "UFCC/?element1="
-            + elements[0]
-            + "&element2="
-            + elements[1]
-        )
+        suburl = "UFCC/?element1=" + elements[0] + "&element2=" + elements[1]
         self.results = self._make_request(suburl)
         return self.results
 

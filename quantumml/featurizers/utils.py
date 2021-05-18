@@ -1,8 +1,9 @@
 import itertools
-from typing import List,Any
+from typing import List, Any
 from pymatgen.core.periodic_table import Element
 
 PymatgenStructure = Any
+
 
 def calc_adf_tup(elements: List) -> List:
     """
@@ -19,12 +20,13 @@ def calc_adf_tup(elements: List) -> List:
         list of adf tuples
     """
     if len(elements) != 2:
-        raise ValueError('Element must be of length 2')
+        raise ValueError("Element must be of length 2")
 
     adf_tup = [list(p) for p in itertools.product(elements, repeat=3)]
     del adf_tup[3]
     del adf_tup[3]
     return adf_tup
+
 
 def calc_rdf_tup(elements: List) -> List:
     """
@@ -41,10 +43,11 @@ def calc_rdf_tup(elements: List) -> List:
         list of adf tuples
     """
     if len(elements) != 2:
-        raise ValueError('Element must be of length 2')
-    return [list(p)for p in itertools.combinations_with_replacement(elements, 2)]
+        raise ValueError("Element must be of length 2")
+    return [list(p) for p in itertools.combinations_with_replacement(elements, 2)]
 
-def calc_mol_frac(elements: List ,structure: PymatgenStructure) -> List:
+
+def calc_mol_frac(elements: List, structure: PymatgenStructure) -> List:
     """
     Calculate the molar fraction of elements from pymatgen structure.
     Parameters
@@ -66,6 +69,7 @@ def calc_mol_frac(elements: List ,structure: PymatgenStructure) -> List:
         molarFrac.append((elements[i], elemPerc))
     return molarFrac
 
+
 def get_specs_ab(pair: List) -> List:
     """
     get elements a and b in the rdf tup
@@ -82,6 +86,7 @@ def get_specs_ab(pair: List) -> List:
     """
     return [Element(pair[0]), Element(pair[1])]
 
+
 def get_indices_ab(sites: List, specs_ab: List) -> List:
     """
     get the indices corresponding to elements a and b in the rdf tup
@@ -96,8 +101,11 @@ def get_indices_ab(sites: List, specs_ab: List) -> List:
     indices_ab : list
         list of indices corresponding to elements a and b in the rdf tup
     """
-    indices_ab = [[j[0] for j in enumerate(sites) if j[1].specie == spec] for spec in specs_ab]
+    indices_ab = [
+        [j[0] for j in enumerate(sites) if j[1].specie == spec] for spec in specs_ab
+    ]
     return indices_ab
+
 
 def conatians_ab(indices_ab: List):
     """
@@ -114,7 +122,8 @@ def conatians_ab(indices_ab: List):
     """
     return 0 in [len(site) for site in sites_ab]
 
-def get_neighbor_atoms(neighbors:List, indices:List) -> List:
+
+def get_neighbor_atoms(neighbors: List, indices: List) -> List:
     """
     returns list of pymatgen periodic sites of the neighbor atoms of element
 
@@ -122,7 +131,20 @@ def get_neighbor_atoms(neighbors:List, indices:List) -> List:
     ----------
     neighbors : List
         list of neighbors within a cutoff radius using pymatgen Strcture.get_neighbor_atoms
-
+    indices : List
+        list of indices of the site of the desired element A or B
+    Returns
+    -------
+    Neighbors : List
+        list of neighbors of element A or B
     """
-    Neighbors = [neighbors[i] for i in indices] # Get all neighbors of alphaSpec
+    Neighbors = [neighbors[i] for i in indices]  # Get all neighbors of alphaSpec
     return Neighbors
+
+def get_neighbor_distribution_list(Neighbors_ab, Spec_ba):
+    NeighborDistList = []
+    for aN in Neighbors_ab:
+        tempNeighborList = [neighbor for neighbor in aN if neighbor[0].specie==Spec_ba]# Neighbors of alphaSpec that are betaSpec
+        NeighborDist = [j[1][1] for j in enumerate(tempNeighborList)]
+        NeighborDistList.append(NeighborDist) # Add the neighbor distances of all such neighbors to a list
+    return NeighborDistList

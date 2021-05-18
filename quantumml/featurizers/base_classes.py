@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 PymatgenStructure = Any
 
+
 class Featurizer(object):
     """Abstract class for calculating a set of features for a datapoint.
     This class is abstract and cannot be invoked directly. You'll
