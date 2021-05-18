@@ -14,6 +14,9 @@ structure = Structure.from_dict(poscar_dict)
 expect_molarFrac_list = [('Al', 0.5), ('Ni', 0.5)]
 calculated_molarFrac_list = calc_mol_frac(elements, structure)
 
+specs_ab = get_specs_ab(pair=elements)
+expected_indices = [[2,3,4,6],[0,1,5,7]]
+
 def test_calc_rdf_tup_len():
     assert len(expected_list_rdf) == len(calculated_list_rdf)
 
@@ -36,7 +39,10 @@ def test_calc_mol_frac_element():
         assert tup in expect_molarFrac_list
 
 def test_specs_ab():
-    list_ab = get_specs_ab(pair=elements)
-    assert len(list_ab) == 2
-    for el in list_ab:
+    assert len(specs_ab) == 2
+    for el in specs_ab:
         assert type(el) == type(Element('Al'))
+
+def test_get_sites_ab():
+    calculated_indices = get_sites_ab(structure.sites, specs_ab)
+    assert calculated_indices == expected_indices
