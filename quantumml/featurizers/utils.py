@@ -44,7 +44,7 @@ def calc_rdf_tup(elements: List) -> List:
         raise ValueError('Element must be of length 2')
     return [list(p)for p in itertools.combinations_with_replacement(elements, 2)]
 
-def calc_mol_frac(elements,structure: PymatgenStructure) -> List:
+def calc_mol_frac(elements: List ,structure: PymatgenStructure) -> List:
     """
     Calculate the molar fraction of elements from pymatgen structure.
     Parameters
@@ -66,5 +66,36 @@ def calc_mol_frac(elements,structure: PymatgenStructure) -> List:
         molarFrac.append((elements[i], elemPerc))
     return molarFrac
 
-def get_alpha_beta_spec(pair):
-    return Element(pair[0]), Element(pair[1])
+def get_specs_ab(pair: List) -> List:
+    """
+    get elements a and b in the rdf tup
+
+    Parameters
+    ----------
+    pair : list
+        pair of elements
+
+    Returns
+    -------
+    specs_ab : list
+        list of element objects for elements a and b
+    """
+    return [Element(pair[0]), Element(pair[1])]
+
+def get_sites_ab(sites, specs_ab):
+    """
+    get the indices corresponding to elements a and b in the rdf tup
+
+    Parameters
+    ----------
+    sites : list
+        list of PyMatGen periodic sites
+
+    Returns
+    -------
+    indices_ab : list
+        list of indices corresponding to elements a and b in the rdf tup
+    """
+    indices_ab = [[j[0] for j in enumerate(sites) if j[1].specie == spec] for spec in specs_ab]
+    return indices_ab
+

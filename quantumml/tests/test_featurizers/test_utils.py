@@ -35,8 +35,8 @@ def test_calc_mol_frac_element():
     for tup in calculated_molarFrac_list:
         assert tup in expect_molarFrac_list
 
-def test_alpha_beta_spec():
-    list_alpha_beta = get_alpha_beta_spec(pair=elements)
-    assert len(list_alpha_beta) == 2
-    for el in list_alpha_beta:
+def test_specs_ab():
+    list_ab = get_specs_ab(pair=elements)
+    assert len(list_ab) == 2
+    for el in list_ab:
         assert type(el) == type(Element('Al'))

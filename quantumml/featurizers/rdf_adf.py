@@ -43,15 +43,7 @@ class Global_RDF(MaterialStructureFeaturizer):
         self.numBins = len(self.binRad)
         self.numPairs = len(self.rdf_tup)
 
-    def get_alpha_neighbor_distribution_list(alphaNeighbors, betaSpec):
-        alphaNeighborDistList = []
-        for aN in alphaNeighbors:
-            tempNeighborList = [neighbor for neighbor in aN if neighbor[0].specie==betaSpec] # Neighbors of alphaSpec that are betaSpec
-            alphaNeighborDist = []
-            for j in enumerate(tempNeighborList):
-                alphaNeighborDist.append(j[1][1])
-            alphaNeighborDistList.append(alphaNeighborDist) # Add the neighbor distances of all such neighbors to a list
-        return alphaNeighborDistList
+
 
 
 class RDF(MaterialStructureFeaturizer):
