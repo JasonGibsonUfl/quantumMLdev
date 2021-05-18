@@ -59,6 +59,19 @@ class MLRester(object):
         data = json.loads(response.text)
         return data
 
+    def get_uf3(self, elements):
+        """
+        gets uf3 pair potentials
+        """
+        suburl = (
+            "UFCC/?element1="
+            + elements[0]
+            + "&element2="
+            + elements[1]
+        )
+        self.results = self._make_request(suburl)
+        return self.results
+
     def get_SVR(self, target_property, elements, best="test_MAE"):
         """
         Returns all the parameters of an SVR model for reconstruction
@@ -81,7 +94,7 @@ class MLRester(object):
             + target_property
             + "&element1="
             + elements[0]
-            + "&element2"
+            + "&element2="
             + elements[1]
         )
 

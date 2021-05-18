@@ -7,23 +7,6 @@ PymatgenStructure = Any
 
 class SOAP(MaterialStructureFeaturizer):
     """
-    Calculate sine Coulomb matrix for crystals.
-    A variant of Coulomb matrix for periodic crystals.
-    The sine Coulomb matrix is identical to the Coulomb matrix, except
-    that the inverse distance function is replaced by the inverse of
-    sin**2 of the vector between sites which are periodic in the
-    dimensions of the crystal lattice.
-    Features are flattened into a vector of matrix eigenvalues by default
-    for ML-readiness. To ensure that all feature vectors are equal
-    length, the maximum number of atoms (eigenvalues) in the input
-    dataset must be specified.
-    This featurizer requires the optional dependencies pymatgen and
-    matminer. It may be useful when crystal structures with 3D coordinates
-    are available.
-    See [1]_ for more details.
-    References
-    ----------
-    .. [1] Faber et al. Inter. J. Quantum Chem. 115, 16, 2015.
     Examples
     --------
     >>> import pymatgen as mg
@@ -67,7 +50,10 @@ class SOAP(MaterialStructureFeaturizer):
         self.periodic = periodic
 
     def _featurize(self, struct: PymatgenStructure) -> np.ndarray:
-        """
+
+        if self.soap is None:
+            try:
+                from dscribe.descriptors import SOAP        """
         Calculate sine Coulomb matrix from pymatgen structure.
         Parameters
         ----------
@@ -80,9 +66,6 @@ class SOAP(MaterialStructureFeaturizer):
         2D sine Coulomb matrix with shape (max_atoms, max_atoms),
         or 1D matrix eigenvalues with shape (max_atoms,).
         """
-        if self.soap is None:
-            try:
-                from dscribe.descriptors import SOAP
 
                 self.soap = SOAP(
                     periodic=self.periodic,
@@ -95,7 +78,7 @@ class SOAP(MaterialStructureFeaturizer):
                     average=self.average,
                 )
             except ModuleNotFoundError:
-                raise ImportError("This class requires matminer to be installed.")
+                raise ImportError("This class requires dscribe to be installed.")
         adaptor = AseAtomsAdaptor()
         struct = adaptor.get_atoms(struct)
         features = self.soap.create(struct)

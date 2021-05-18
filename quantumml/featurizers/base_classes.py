@@ -48,6 +48,7 @@ class Featurizer(object):
             try:
                 features.append(self._featurize(point))
             except:
+                features.append(self._featurize(point))
                 logger.warning(
                     "Failed to featurize datapoint %d. Appending empty array"
                 )
@@ -197,6 +198,7 @@ class MaterialStructureFeaturizer(Featurizer):
                     structure = Structure.from_dict(structure)
                 features.append(self._featurize(structure))
             except:
+                features.append(self._featurize(structure))
                 logger.warning(
                     "Failed to featurize datapoint %i. Appending empty array" % idx
                 )
