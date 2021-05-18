@@ -43,6 +43,11 @@ def test_specs_ab():
     for el in specs_ab:
         assert type(el) == type(Element('Al'))
 
-def test_get_sites_ab():
-    calculated_indices = get_sites_ab(structure.sites, specs_ab)
+def test_get_indices_ab():
+    calculated_indices = get_indices_ab(structure.sites, specs_ab)
     assert calculated_indices == expected_indices
+
+def test_get_neighbor_atoms():
+    neighbors = structure.get_all_neighbors(10.1)
+    neighbor_atoms = get_neighbor_atoms(neighbors,expected_indices[0])
+    assert isinstance(neighbor_atoms, List)

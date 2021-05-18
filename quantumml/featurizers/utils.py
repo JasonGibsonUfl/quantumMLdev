@@ -82,7 +82,7 @@ def get_specs_ab(pair: List) -> List:
     """
     return [Element(pair[0]), Element(pair[1])]
 
-def get_sites_ab(sites, specs_ab):
+def get_indices_ab(sites: List, specs_ab: List) -> List:
     """
     get the indices corresponding to elements a and b in the rdf tup
 
@@ -99,3 +99,30 @@ def get_sites_ab(sites, specs_ab):
     indices_ab = [[j[0] for j in enumerate(sites) if j[1].specie == spec] for spec in specs_ab]
     return indices_ab
 
+def conatians_ab(indices_ab: List):
+    """
+    checks to see if structure contains both elements a and b
+
+    Parameters
+    ----------
+    indices_ab : list
+        2D list of the indices of atom A and B
+
+    Returns
+    -------
+
+    """
+    return 0 in [len(site) for site in sites_ab]
+
+def get_neighbor_atoms(neighbors:List, indices:List) -> List:
+    """
+    returns list of pymatgen periodic sites of the neighbor atoms of element
+
+    Parameters
+    ----------
+    neighbors : List
+        list of neighbors within a cutoff radius using pymatgen Strcture.get_neighbor_atoms
+
+    """
+    Neighbors = [neighbors[i] for i in indices] # Get all neighbors of alphaSpec
+    return Neighbors
