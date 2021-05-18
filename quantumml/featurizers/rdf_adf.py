@@ -14,7 +14,7 @@ from sklearn.preprocessing import StandardScaler as SS
 from sklearn.model_selection import RandomizedSearchCV as CV
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
-from .utils import calc_rdf_tup
+from .utils import calc_rdf_tup, get_alpha_beta_spec
 from typing import List
 PymatgenStructure = Any
 
@@ -29,7 +29,7 @@ class Global_RDF(MaterialStructureFeaturizer):
     Examples
     --------
     """
-    def __init__(self, elements: List, rcut: float, stepSize: float,sigma: float ):
+    def __init__(self, elements: List, rcut: float = 10.1, stepSize: float = 10.1 , sigma: float = 0.1 ):
         """
         Parameters : list
             list of elements symbols
@@ -42,6 +42,16 @@ class Global_RDF(MaterialStructureFeaturizer):
         self.binRad = np.arange(0.1, rcut, stepSize)
         self.numBins = len(self.binRad)
         self.numPairs = len(self.rdf_tup)
+
+    def get_alpha_neighbor_distribution_list(alphaNeighbors, betaSpec):
+        alphaNeighborDistList = []
+        for aN in alphaNeighbors:
+            tempNeighborList = [neighbor for neighbor in aN if neighbor[0].specie==betaSpec] # Neighbors of alphaSpec that are betaSpec
+            alphaNeighborDist = []
+            for j in enumerate(tempNeighborList):
+                alphaNeighborDist.append(j[1][1])
+            alphaNeighborDistList.append(alphaNeighborDist) # Add the neighbor distances of all such neighbors to a list
+        return alphaNeighborDistList
 
 
 class RDF(MaterialStructureFeaturizer):

@@ -53,7 +53,10 @@ class SOAP(MaterialStructureFeaturizer):
 
         if self.soap is None:
             try:
-                from dscribe.descriptors import SOAP        """
+                from dscribe.descriptors import SOAP
+            except ModuleNotFoundError:
+                raise ImportError("This class requires dscribe to be installed.")
+        """
         Calculate sine Coulomb matrix from pymatgen structure.
         Parameters
         ----------
@@ -67,18 +70,17 @@ class SOAP(MaterialStructureFeaturizer):
         or 1D matrix eigenvalues with shape (max_atoms,).
         """
 
-                self.soap = SOAP(
-                    periodic=self.periodic,
-                    species=self.species,
-                    rcut=self.rcut,
-                    nmax=self.nmax,
-                    lmax=self.lmax,
-                    rbf=self.rbf,
-                    sigma=self.sigma,
-                    average=self.average,
-                )
-            except ModuleNotFoundError:
-                raise ImportError("This class requires dscribe to be installed.")
+        self.soap = SOAP(
+            periodic=self.periodic,
+            species=self.species,
+            rcut=self.rcut,
+            nmax=self.nmax,
+            lmax=self.lmax,
+            rbf=self.rbf,
+            sigma=self.sigma,
+            average=self.average,
+        )
+
         adaptor = AseAtomsAdaptor()
         struct = adaptor.get_atoms(struct)
         features = self.soap.create(struct)

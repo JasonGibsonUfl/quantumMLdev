@@ -65,3 +65,6 @@ def calc_mol_frac(elements,structure: PymatgenStructure) -> List:
         elemPerc = structure.composition.get_atomic_fraction(elem)
         molarFrac.append((elements[i], elemPerc))
     return molarFrac
+
+def get_alpha_beta_spec(pair):
+    return Element(pair[0]), Element(pair[1])
