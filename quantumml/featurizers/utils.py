@@ -107,7 +107,7 @@ def get_indices_ab(sites: List, specs_ab: List) -> List:
     return indices_ab
 
 
-def conatians_ab(indices_ab: List):
+def contains_ab(indices_ab: List):
     """
     checks to see if structure contains both elements a and b
 
@@ -120,7 +120,7 @@ def conatians_ab(indices_ab: List):
     -------
 
     """
-    return 0 in [len(site) for site in sites_ab]
+    return 0 in [len(site) for site in indices_ab]
 
 
 def get_neighbor_atoms(neighbors: List, indices: List) -> List:
@@ -141,7 +141,18 @@ def get_neighbor_atoms(neighbors: List, indices: List) -> List:
     Neighbors = [neighbors[i] for i in indices]  # Get all neighbors of alphaSpec
     return Neighbors
 
-def get_neighbor_distribution_list(Neighbors_ab, Spec_ba):
+def get_neighbor_distribution_list(Neighbors_ab : List, Spec_ba) -> List:
+    """
+    get neighbor distribution of elemnet B/A with respect to element A/B
+    Parameters
+    ----------
+    Neighbors_ab : List
+        list of neighbor atoms for element A/B
+    Spec_ba : Element
+        element B/A
+    Returns : List
+        list of the of neighbor distribution
+    """
     NeighborDistList = []
     for aN in Neighbors_ab:
         tempNeighborList = [neighbor for neighbor in aN if neighbor[0].specie==Spec_ba]# Neighbors of alphaSpec that are betaSpec
