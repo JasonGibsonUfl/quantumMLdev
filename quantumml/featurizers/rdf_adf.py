@@ -48,47 +48,44 @@ class Global_RDF(MaterialStructureFeaturizer):
         self.rcut = rcut
         self.stepSize = stepSize
         self.sigma = sigma
+        self.binRad = np.arange(0.1, self.rcut, self.stepSize)
+        self.numBins = len(self.binRad)
+        self.numPairs = len(self.rdf_tup)
 
-    def _get_bin_rad(self):
-        return np.arange(0.1, self.rcut, self.stepSize)
 
-    def _get_ind(self, dist, numBins):
+    def _get_ind(self, dist):
         inds = int(dist / self.stepSize)
         lowerInd = (inds - 5) if (inds - 5) > 0 else 0
-        upperInd = (inds + 5) if (inds + 5) < numBins else numBins - 1
+        upperInd = (inds + 5) if (inds + 5) < self.numBins else self.numBins - 1
         return range(lowerInd, upperInd)
 
-    def _calculate_rdf(self, ind, dist, binRad):
-        evalRad = binRad[ind]
+    def _calculate_rdf(self, ind, dist):
+        evalRad = self.binRad[ind]
         exp_Arg = .5 * ((np.subtract(evalRad, dist) / (self.sigma)) ** 2)  # Calculate RDF value for each bin
         rad2 = np.multiply(evalRad, evalRad)  # Add a 1/r^2 normalization term, check paper for descripton
         return np.divide(np.exp(-exp_Arg), rad2)
 
-    def apply_gaussian_broadening(self, NeighborDistList, numBins, binRad):
+    def _apply_gaussian_broadening(self, NeighborDistList):
         # Apply gaussian broadening to the neigbor distances,
         # so the effect of having a neighbor at distance x is spread out over few bins around x
-        hist = np.zeros(numBins)
+        hist = np.zeros(self.numBins)
         for aND in NeighborDistList:
             for dist in aND:
-                ind = self._get_ind(dist, numBins)
-                hist[ind] += self._calculate_rdf(ind, dist, binRad)
+                ind = self._get_ind(dist)
+                hist[ind] += self._calculate_rdf(ind, dist)
         return hist
 
     def _featurize(self, structure: PymatgenStructure) -> np.ndarray:
-        RDF_Tup = self.rdf_tup
-        rcut = self.rcut
-        binRad = self._get_bin_rad()  # Make bins based on stepSize and cutOffRad
-        numBins = len(binRad)
-        numPairs = len(RDF_Tup)
+
         print(f'numPairs {numPairs}, numBins {numBins}')
-        vec = np.zeros((numPairs, numBins))  # Create a vector of zeros (dimension: numPairs*numBins)
-        neighbors = structure.get_all_neighbors(rcut)
+        vec = np.zeros((self.numPairs, self.numBins))  # Create a vector of zeros (dimension: numPairs*numBins)
+        neighbors = structure.get_all_neighbors(self.rcut)
         sites = structure.sites
-        for index, pair in enumerate(RDF_Tup):
+        for index, pair in enumerate(self.rdf_tup):
             specs_ab = get_specs_ab(pair)
             indices_ab = get_indices_ab(sites, specs_ab)
             if contains_ab(indices_ab):
-                vec[index] = np.zeros(numBins)
+                vec[index] = np.zeros(self.numBins)
                 continue
             alphaNeighbors = get_neighbor_atoms(neighbors, indices_ab[0])
 
@@ -96,142 +93,12 @@ class Global_RDF(MaterialStructureFeaturizer):
 
             # Apply gaussian broadening to the neigbor distances,
             # so the effect of having a neighbor at distance x is spread out over few bins around x
-            hist = self.apply_gaussian_broadening(alphaNeighborDistList, numBins, binRad)
+            hist = self._apply_gaussian_broadening(alphaNeighborDistList)
             tempHist = hist / len(
                 indices_ab[0])  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
             vec[index] = tempHist
 
         vec = np.row_stack((vec[0], vec[1], vec[2]))  # Combine all vectors to get RDFMatrix
-        return vec
-
-
-class RDF(MaterialStructureFeaturizer):
-    """
-
-    """
-
-    def __init__(
-        self,
-        species: list,
-        RDF_Tup: list,
-        rcut: float = 10.1,
-        stepSize: float = 0.1,
-        sigma: float = 0.2,
-    ):
-        """
-        Parameters
-        ----------
-        max_atoms: int (default 100)
-          Maximum number of atoms for any crystal in the dataset. Used to
-          pad the Coulomb matrix.
-        flatten: bool (default True)
-          Return flattened vector of matrix eigenvalues.
-        """
-        self.species = species
-        self.rcut = rcut
-        self.RDF_Tup = RDF_Tup
-        self.stepSize = stepSize
-        self.sigma = sigma
-
-    def get_alpha_beta(self, struct):
-        RDF_Tup = self.RDF_Tup
-        rcut = self.rcut
-        sigma = self.sigma
-        stepSize = self.stepSize
-        binRad = np.arange(0.1, rcut, stepSize)  # Make bins based on stepSize and rcut
-        numBins = len(binRad)
-        numPairs = len(RDF_Tup)
-        vec = np.zeros(
-            (numPairs, numBins)
-        )  # Create a vector of zeros (dimension: numPairs*numBins)
-
-        for index, pair in enumerate(RDF_Tup):
-            alphaSpec = Element(pair[0])
-            betaSpec = Element(pair[1])
-            hist = np.zeros(numBins)
-            neighbors = struct.get_all_neighbors(rcut)
-
-            sites = struct.sites  # All sites in the structue
-            indicesA = [
-                j[0] for j in enumerate(sites) if j[1].specie == alphaSpec
-            ]  # Get all alphaSpec sites in the structure
-            numAlphaSites = len(indicesA)
-            indicesB = [
-                j[0] for j in enumerate(sites) if j[1].specie == betaSpec
-            ]  # Get all betaSpec sites in the structure
-            numBetaSites = len(indicesB)
-
-            # If no alphaSpec or betaSpec atoms, RDF vector is zero
-            if numAlphaSites == 0 or numBetaSites == 0:
-                vec[index] = hist
-                continue
-
-            alphaNeighbors = [
-                neighbors[i] for i in indicesA
-            ]  # Get all neighbors of alphaSpec
-
-            alphaNeighborDistList = []
-            for aN in alphaNeighbors:
-                tempNeighborList = [
-                    neighbor for neighbor in aN if neighbor[0].specie == betaSpec
-                ]  # Neighbors of alphaSpec that are betaSpec
-                alphaNeighborDist = []
-                for j in enumerate(tempNeighborList):
-                    alphaNeighborDist.append(j[1][1])
-                alphaNeighborDistList.append(
-                    alphaNeighborDist
-                )  # Add the neighbor distances of all such neighbors to a list
-
-            # Apply gaussian broadening to the neigbor distances,
-            # so the effect of having a neighbor at distance x is spread out over few bins around x
-            for aND in alphaNeighborDistList:
-                for dist in aND:
-                    inds = dist / stepSize
-                    inds = int(inds)
-                    lowerInd = inds - 5
-                    if lowerInd < 0:
-                        while lowerInd < 0:
-                            lowerInd = lowerInd + 1
-                    upperInd = inds + 5
-                    if upperInd >= numBins:
-                        while upperInd >= numBins:
-                            upperInd = upperInd - 1
-                    ind = range(lowerInd, upperInd)
-                    evalRad = binRad[ind]
-                    exp_Arg = 0.5 * (
-                        (np.subtract(evalRad, dist) / (sigma)) ** 2
-                    )  # Calculate RDF value for each bin
-                    rad2 = np.multiply(
-                        evalRad, evalRad
-                    )  # Add a 1/r^2 normalization term, check paper for descripton
-                    hist[ind] += np.divide(np.exp(-exp_Arg), rad2)
-
-        tempHist = (
-            hist / numAlphaSites
-        )  # Divide by number of AlphaSpec atoms in the unit struct to give the final partial RDF
-        vec[index] = tempHist
-        return vec
-
-    def _featurize(self, struct: PymatgenStructure) -> np.ndarray:
-        """
-            Calculates the RDF for every structure.
-
-            Args:
-                struct: input structure.
-
-                RDF_Tup: list of all element pairs for which the partial RDF is calculated.
-
-                rcut: max. distance up to which atom-atom intereactions are considered.
-
-                sigma: width of the Gaussian, used for broadening
-
-                stepSize:  bin width, binning transforms the RDF into a discrete representation.
-
-        """
-        vec = self.get_alpha_beta(struct)
-        vec = np.row_stack(
-            (vec[0], vec[1], vec[2])
-        )  # Combine all vectors to get RDFMatrix
         return vec
 
 
