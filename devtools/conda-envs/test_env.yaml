@@ -19,6 +19,7 @@ dependencies:
   - dscribe
   - pymatgen
   - scikit-learn
+  - onnxruntime
 
     # Pip-only installs
   #- pip:

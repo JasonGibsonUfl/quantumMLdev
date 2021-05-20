@@ -76,4 +76,13 @@ poscar_dict = {
     ],
 }
 
-from quantumml.featurizers.utils import *
+from pymatgen.core import Structure
+from quantumml.featurizers.rdf_adf import Global_RDF
+import numpy as np
+elements = ['Al', 'Ni']
+
+def test_global_rdf_class():
+    grdf = Global_RDF(elements)
+    structure = Structure.from_dict(poscar_dict)
+    features = grdf.featurize([structure])
+    assert isinstance(features, np.ndarray)

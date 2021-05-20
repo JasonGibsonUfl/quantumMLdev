@@ -185,7 +185,7 @@ class MaterialStructureFeaturizer(Featurizer):
           `structures`.
         """
         try:
-            from pymatgen import Structure
+            from pymatgen.core import Structure
         except ModuleNotFoundError:
             raise ImportError("This class requires pymatgen to be installed.")
 

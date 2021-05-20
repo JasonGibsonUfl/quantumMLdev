@@ -98,7 +98,7 @@ structure = Structure.from_dict(poscar_dict)
 expect_molarFrac_list = [("Al", 0.5), ("Ni", 0.5)]
 calculated_molarFrac_list = calc_mol_frac(elements, structure)
 
-specs_ab = get_specs_ab(pair=elements)
+specs_ab = get_elements(elements)
 expected_indices = [[2, 3, 4, 6], [0, 1, 5, 7]]
 
 
@@ -129,24 +129,22 @@ def test_calc_mol_frac_element():
         assert tup in expect_molarFrac_list
 
 
-def test_specs_ab():
-    assert len(specs_ab) == 2
+def test_elements():
     for el in specs_ab:
         assert type(el) == type(Element("Al"))
 
 
-def test_get_indices_ab():
-    calculated_indices = get_indices_ab(structure.sites, specs_ab)
+def test_get_indices():
+    calculated_indices = get_indices(structure.sites, specs_ab)
     assert calculated_indices == expected_indices
 
 
-def test_get_neighbor_atoms():
-    neighbors = structure.get_all_neighbors(10.1)
-    neighbor_atoms = get_neighbor_atoms(neighbors, expected_indices[0])
-    assert isinstance(neighbor_atoms, List)
+# def test_get_neighbor_atoms():
+#     neighbors = structure.get_all_neighbors(10.1)
+#     neighbor_atoms = get_neighbor_atoms(neighbors, expected_indices[0])
+#     assert isinstance(neighbor_atoms, List)
 
 def test_get_neighbor_distribution_list():
     neighbors = structure.get_all_neighbors(10.1)
-    Neighbors_ab = get_neighbor_atoms(neighbors, expected_indices[0])
-    ndl = get_neighbor_distribution_list(Neighbors_ab, specs_ab[-1])
+    ndl = get_neighbor_distribution_list(neighbors,expected_indices[0], specs_ab[-1])
     assert isinstance(ndl, List)
