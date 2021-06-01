@@ -1,11 +1,12 @@
-
 import onnxruntime as rt
 import numpy as np
 import urllib.request, json
 
 from PIL import Image
 import requests
-class MLModel():
+
+
+class MLModel:
 
     """
     Class to hold all components used to train a ML model
@@ -28,7 +29,16 @@ class MLModel():
         path to learning curve image
     """
 
-    def __init__(self, elements, featurizer, training_data_path, model,pipeline, full_pipeline, learning_curve):
+    def __init__(
+        self,
+        elements,
+        featurizer,
+        training_data_path,
+        model,
+        pipeline,
+        full_pipeline,
+        learning_curve,
+    ):
         self.elements = elements
         self.featurizer = featurizer
         self.training_data_path = training_data_path
@@ -71,10 +81,32 @@ class MLModel():
         return pipeline
 
     def get_training_data(self):
+        """
+        returns the data used to train the model
+
+        Returns
+        -------
+        train, test: dict
+            dictionary with keys as str(range(len(train or test))) with sub_dictionary keys as 'structure' 'TARGET'
+            'structure' will return the structure as a dict that can be reconstructed as a pymatgen.structure
+        Examples
+        --------
+        >>> train, test = self.get_training_data()
+        >>> test_in = []
+        >>> test_out = []
+        >>> for ind in range(3):
+        >>>     data_point = test[str(ind)]
+        >>>     test_in.append(Structure.from_dict(data_point['structure']))
+        >>>     test_out.append(data_point['Formation_Energy'])
+        >>> print(f'len(test_in)  = {len(test_in)} element_type = {str(type(test_in[0]))[8:-2]}')
+        >>> print(f'len(test_out) = {len(test_out)} element_type = {str(type(test_out[0]))[8:-2]}')
+        len(test_in)  = 3 element_type = pymatgen.core.structure.Structure
+        len(test_out) = 3 element_type = float
+        """
         with urllib.request.urlopen(self.training_data_path) as url:
             data = json.loads(url.read().decode())
-        train = data['training']
-        test = data['testing']
+        train = data["training"]
+        test = data["testing"]
         return train, test
 
     def get_full_pipeline(self):
@@ -82,6 +114,3 @@ class MLModel():
 
     def plot_learning_curve(self):
         return Image.open(requests.get(self.learning_curve, stream=True).raw)
-
-
-

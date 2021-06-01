@@ -52,7 +52,6 @@ class Global_RDF(MaterialStructureFeaturizer):
         self.numBins = len(self.binRad)
         self.numPairs = len(self.rdf_tup)
 
-
     def _get_ind(self, dist):
         inds = int(dist / self.stepSize)
         lowerInd = (inds - 5) if (inds - 5) > 0 else 0
@@ -61,8 +60,12 @@ class Global_RDF(MaterialStructureFeaturizer):
 
     def _calculate_rdf(self, ind, dist):
         evalRad = self.binRad[ind]
-        exp_Arg = .5 * ((np.subtract(evalRad, dist) / (self.sigma)) ** 2)  # Calculate RDF value for each bin
-        rad2 = np.multiply(evalRad, evalRad)  # Add a 1/r^2 normalization term, check paper for descripton
+        exp_Arg = 0.5 * (
+            (np.subtract(evalRad, dist) / (self.sigma)) ** 2
+        )  # Calculate RDF value for each bin
+        rad2 = np.multiply(
+            evalRad, evalRad
+        )  # Add a 1/r^2 normalization term, check paper for descripton
         return np.divide(np.exp(-exp_Arg), rad2)
 
     def _apply_gaussian_broadening(self, NeighborDistList):
@@ -77,7 +80,9 @@ class Global_RDF(MaterialStructureFeaturizer):
 
     def _featurize(self, structure: PymatgenStructure) -> np.ndarray:
 
-        vec = np.zeros((self.numPairs, self.numBins))  # Create a vector of zeros (dimension: numPairs*numBins)
+        vec = np.zeros(
+            (self.numPairs, self.numBins)
+        )  # Create a vector of zeros (dimension: numPairs*numBins)
         neighbors = structure.get_all_neighbors(self.rcut)
         sites = structure.sites
         for index, tup in enumerate(self.rdf_tup):
@@ -87,16 +92,21 @@ class Global_RDF(MaterialStructureFeaturizer):
                 vec[index] = np.zeros(self.numBins)
                 continue
 
-            alphaNeighborDistList = get_neighbor_distribution_list(neighbors, indices_ab[0], specs_ab[-1])
+            alphaNeighborDistList = get_neighbor_distribution_list(
+                neighbors, indices_ab[0], specs_ab[-1]
+            )
 
             # Apply gaussian broadening to the neigbor distances,
             # so the effect of having a neighbor at distance x is spread out over few bins around x
             hist = self._apply_gaussian_broadening(alphaNeighborDistList)
             tempHist = hist / len(
-                indices_ab[0])  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
+                indices_ab[0]
+            )  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
             vec[index] = tempHist
 
-        vec = np.row_stack((vec[0], vec[1], vec[2]))  # Combine all vectors to get RDFMatrix
+        vec = np.row_stack(
+            (vec[0], vec[1], vec[2])
+        )  # Combine all vectors to get RDFMatrix
         return vec
 
 
@@ -113,11 +123,7 @@ class Global_ADF(MaterialStructureFeaturizer):
     """
 
     def __init__(
-        self,
-        elements: List,
-        rcut: float = 5,
-        stepSize: float = 0.1,
-        sigma: float = 0.2,
+        self, elements: List, rcut: float = 5, stepSize: float = 0.1, sigma: float = 0.2
     ):
         """
         Parameters : list
@@ -132,17 +138,18 @@ class Global_ADF(MaterialStructureFeaturizer):
         self.numBins = len(self.binRad)
         self.numPairs = len(self.rdf_tup)
 
-
     def _get_ind(self, ang):
         inds = int(ang / self.stepSize)
-        lowerInd = (inds +8) if (inds +8) > 0 else 0
+        lowerInd = (inds + 8) if (inds + 8) > 0 else 0
         upperInd = (inds + 12) if (inds + 12) <= self.numBins else self.numBins
         return range(lowerInd, upperInd)
 
     def _calculate_adf(self, ind, dist):
         evalRad = self.binRad[ind]
-        exp_Arg = .5 * ((np.subtract(evalRad, dist) / (self.sigma)) ** 2)  # Calculate RDF value for each bin
-        return np.exp(-exp_Arg)*f
+        exp_Arg = 0.5 * (
+            (np.subtract(evalRad, dist) / (self.sigma)) ** 2
+        )  # Calculate RDF value for each bin
+        return np.exp(-exp_Arg) * f
 
     def _apply_gaussian_broadening(self, NeighborDistList):
         # Apply gaussian broadening to the neigbor distances,
@@ -156,7 +163,9 @@ class Global_ADF(MaterialStructureFeaturizer):
 
     def _featurize(self, structure: PymatgenStructure) -> np.ndarray:
 
-        vec = np.zeros((self.numPairs, self.numBins))  # Create a vector of zeros (dimension: numPairs*numBins)
+        vec = np.zeros(
+            (self.numPairs, self.numBins)
+        )  # Create a vector of zeros (dimension: numPairs*numBins)
         neighbors = structure.get_all_neighbors(self.rcut)
         sites = structure.sites
         for index, tup in enumerate(self.rdf_tup):
@@ -167,14 +176,19 @@ class Global_ADF(MaterialStructureFeaturizer):
                 continue
             alphaNeighbors = [neighbors[i] for i in indices_ab[0]]
 
-            alphaNeighborDistList = get_neighbor_distribution_list(neighbors, indices_ab[0], specs_ab[-1])
+            alphaNeighborDistList = get_neighbor_distribution_list(
+                neighbors, indices_ab[0], specs_ab[-1]
+            )
 
             # Apply gaussian broadening to the neigbor distances,
             # so the effect of having a neighbor at distance x is spread out over few bins around x
             hist = self._apply_gaussian_broadening(alphaNeighborDistList)
             tempHist = hist / len(
-                indices_ab[0])  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
+                indices_ab[0]
+            )  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
             vec[index] = tempHist
 
-        vec = np.row_stack((vec[0], vec[1], vec[2]))  # Combine all vectors to get RDFMatrix
+        vec = np.row_stack(
+            (vec[0], vec[1], vec[2])
+        )  # Combine all vectors to get RDFMatrix
         return vec

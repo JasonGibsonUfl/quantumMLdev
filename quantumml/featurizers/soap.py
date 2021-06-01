@@ -8,7 +8,7 @@ from dscribe.descriptors import SOAP
 PymatgenStructure = Any
 
 
-class SoapTransformer(MaterialStructureFeaturizer,TransformerMixin):
+class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
     """
     Examples
     --------
@@ -24,7 +24,7 @@ class SoapTransformer(MaterialStructureFeaturizer,TransformerMixin):
 
     def __init__(
         self,
-        species: list =[],
+        species: list = [],
         rcut: int = 6,
         nmax: int = 6,
         lmax: int = 8,
@@ -54,7 +54,7 @@ class SoapTransformer(MaterialStructureFeaturizer,TransformerMixin):
         self.periodic = periodic
 
     def __str__(self):
-        return 'Soap'
+        return "Soap"
 
     def _featurize(self, struct: PymatgenStructure) -> np.ndarray:
         #
@@ -98,14 +98,16 @@ class SoapTransformer(MaterialStructureFeaturizer,TransformerMixin):
     def fit(self, x, y=None):
         self.adaptor = AseAtomsAdaptor()
 
-        self.soap = SOAP(species=self.species,
-                         periodic=self.periodic,
-                         rcut=self.rcut,
-                         nmax=self.nmax,
-                         lmax=self.lmax,
-                         rbf=self.rbf,
-                         sigma=self.sigma,
-                         average=self.average)
+        self.soap = SOAP(
+            species=self.species,
+            periodic=self.periodic,
+            rcut=self.rcut,
+            nmax=self.nmax,
+            lmax=self.lmax,
+            rbf=self.rbf,
+            sigma=self.sigma,
+            average=self.average,
+        )
         flattened_entry_list = [self.adaptor.get_atoms(struct) for struct in x]
         self.soap_raw = self.soap.create(flattened_entry_list)
         return self
@@ -118,7 +120,7 @@ class SoapTransformer(MaterialStructureFeaturizer,TransformerMixin):
 
     def set_params(
         self,
-        species: list =[],
+        species: list = [],
         rcut: int = 6,
         nmax: int = 6,
         lmax: int = 8,

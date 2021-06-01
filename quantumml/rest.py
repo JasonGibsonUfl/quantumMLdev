@@ -16,14 +16,17 @@ from dscribe.descriptors import SOAP
 from pymatgen.io.vasp import Xdatcar, Oszicar
 from sklearn.cluster import KMeans
 import numpy as np
-#from .mlModels import MLModel
+
+# from .mlModels import MLModel
 import onnx
 from quantumml.featurizers import SoapTransformer
 import base64
 import ast
 from quantumml.models.sklearnModel import MLModel
 import pickle as pkl
-featurizers = {'SOAP': SoapTransformer()}
+
+featurizers = {"SOAP": SoapTransformer()}
+
 
 class MLRester(object):
     """
@@ -36,6 +39,7 @@ class MLRester(object):
     MLRester uses the "requests" package, which provides for HTTP connection
     pooling. All connections are made via https for security.
     """
+
     results = {}
 
     def __init__(self, api_key=None, endpoint="http://127.0.0.1:8000/rest/"):
@@ -73,8 +77,7 @@ class MLRester(object):
         data = json.loads(response.text)
         return data
 
-
-    def get_model(self,target_property='',elements=[''],doi=''):
+    def get_model(self, target_property="", elements=[""], doi=""):
         """
         Parameters
         ----------
@@ -91,23 +94,31 @@ class MLRester(object):
         """
         suburl = "MachineLearningModel/?"
 
-        alpha = ['A','B','C']
+        alpha = ["A", "B", "C"]
         for i, el in enumerate(elements):
             suburl += f"element_{alpha[i]}={el}&"
-        suburl +=f"DOI={doi}"
+        suburl += f"DOI={doi}"
         self.results = self._make_request(suburl)[0]
-        training_data_url = self.results['training_data_url']
-        onnx_binary = base64.b64decode(self.results['model_onnx_binary'])
+        training_data_url = self.results["training_data_url"]
+        onnx_binary = base64.b64decode(self.results["model_onnx_binary"])
         model_onnx = onnx.load_from_string(onnx_binary)
-        pipeline_binary = base64.b64decode(self.results['pipeline_binary'])
+        pipeline_binary = base64.b64decode(self.results["pipeline_binary"])
         pipeline_model = pkl.loads(pipeline_binary)
-        featurizer = featurizers[self.results['descriptor_name']]
-        param = self.results['featurizer_params']
+        featurizer = featurizers[self.results["descriptor_name"]]
+        param = self.results["featurizer_params"]
         params = ast.literal_eval(param)
         featurizer.set_params(**params)
-        pipeline = self.results['pipeline']
-        learning_curve = self.results['learning_curve']
-        model = MLModel(elements=elements,featurizer=featurizer,training_data_path=training_data_url,model = model_onnx,pipeline=pipeline,full_pipeline=pipeline_model, learning_curve=learning_curve)
+        pipeline = self.results["pipeline"]
+        learning_curve = self.results["learning_curve"]
+        model = MLModel(
+            elements=elements,
+            featurizer=featurizer,
+            training_data_path=training_data_url,
+            model=model_onnx,
+            pipeline=pipeline,
+            full_pipeline=pipeline_model,
+            learning_curve=learning_curve,
+        )
         return model
 
     def get_uf3(self, elements):
@@ -117,6 +128,7 @@ class MLRester(object):
         suburl = "UFCC/?element1=" + elements[0] + "&element2=" + elements[1]
         self.results = self._make_request(suburl)
         return self.results
+
 
 class MWRester(object):
     """"""

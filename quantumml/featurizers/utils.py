@@ -123,7 +123,7 @@ def contains_ab(indices_ab: List):
     return 0 in [len(site) for site in indices_ab]
 
 
-def get_neighbor_list(Neighbors: List, spec1 , spec2 =None) -> List:
+def get_neighbor_list(Neighbors: List, spec1, spec2=None) -> List:
     """
     returns list of pymatgen periodic sites of the neighbor atoms of element
 
@@ -153,7 +153,8 @@ def get_neighbor_list(Neighbors: List, spec1 , spec2 =None) -> List:
         NeighborList2.append(tempNeighborList2)
     return NeighborList1, NeighborList2
 
-def get_neighbor_distribution_list(Neighbors : List, indices_ab, Spec_ba) -> List:
+
+def get_neighbor_distribution_list(Neighbors: List, indices_ab, Spec_ba) -> List:
     """
     get neighbor distribution of elemnet B/A with respect to element A/B
     Parameters
@@ -169,7 +170,11 @@ def get_neighbor_distribution_list(Neighbors : List, indices_ab, Spec_ba) -> Lis
     neighbors = [Neighbors[i] for i in indices_ab]
     NeighborDistList = []
     for aN in neighbors:
-        tempNeighborList = [neighbor for neighbor in aN if neighbor[0].specie==Spec_ba]# Neighbors of alphaSpec that are betaSpec
+        tempNeighborList = [
+            neighbor for neighbor in aN if neighbor[0].specie == Spec_ba
+        ]  # Neighbors of alphaSpec that are betaSpec
         NeighborDist = [j[1][1] for j in enumerate(tempNeighborList)]
-        NeighborDistList.append(NeighborDist) # Add the neighbor distances of all such neighbors to a list
+        NeighborDistList.append(
+            NeighborDist
+        )  # Add the neighbor distances of all such neighbors to a list
     return NeighborDistList

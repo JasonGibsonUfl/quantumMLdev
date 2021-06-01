@@ -144,7 +144,8 @@ def test_get_indices():
 #     neighbor_atoms = get_neighbor_atoms(neighbors, expected_indices[0])
 #     assert isinstance(neighbor_atoms, List)
 
+
 def test_get_neighbor_distribution_list():
     neighbors = structure.get_all_neighbors(10.1)
-    ndl = get_neighbor_distribution_list(neighbors,expected_indices[0], specs_ab[-1])
+    ndl = get_neighbor_distribution_list(neighbors, expected_indices[0], specs_ab[-1])
     assert isinstance(ndl, List)
