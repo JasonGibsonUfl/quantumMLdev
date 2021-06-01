@@ -16,12 +16,26 @@ from dscribe.descriptors import SOAP
 from pymatgen.io.vasp import Xdatcar, Oszicar
 from sklearn.cluster import KMeans
 import numpy as np
-from .mlModels import MLModel
-
+#from .mlModels import MLModel
+import onnx
+from quantumml.featurizers import SoapTransformer
+import base64
+import ast
+from quantumml.models.sklearnModel import MLModel
+import pickle as pkl
+featurizers = {'SOAP': SoapTransformer()}
 
 class MLRester(object):
-    """"""
-
+    """
+    A class to conveniently interface with the MaterialsWeb REST
+    interface. The recommended way to use MLRester is with the "with" context
+    manager to ensure that sessions are properly closed after
+    usage::
+        with MLRester() as mlr:
+            do_something
+    MLRester uses the "requests" package, which provides for HTTP connection
+    pooling. All connections are made via https for security.
+    """
     results = {}
 
     def __init__(self, api_key=None, endpoint="http://127.0.0.1:8000/rest/"):
@@ -59,6 +73,43 @@ class MLRester(object):
         data = json.loads(response.text)
         return data
 
+
+    def get_model(self,target_property='',elements=[''],doi=''):
+        """
+        Parameters
+        ----------
+        target_property : str
+            Property for model to predict
+        elements : list
+            list of elements in string form e.g. ['Cd', 'Te']
+        doi : str
+            doi of model
+        Returns
+        -------
+        model : quantumml.sklearnModel.MLModel
+            returns model containing all training information
+        """
+        suburl = "MachineLearningModel/?"
+
+        alpha = ['A','B','C']
+        for i, el in enumerate(elements):
+            suburl += f"element_{alpha[i]}={el}&"
+        suburl +=f"DOI={doi}"
+        self.results = self._make_request(suburl)[0]
+        training_data_url = self.results['training_data_url']
+        onnx_binary = base64.b64decode(self.results['model_onnx_binary'])
+        model_onnx = onnx.load_from_string(onnx_binary)
+        pipeline_binary = base64.b64decode(self.results['pipeline_binary'])
+        pipeline_model = pkl.loads(pipeline_binary)
+        featurizer = featurizers[self.results['descriptor_name']]
+        param = self.results['featurizer_params']
+        params = ast.literal_eval(param)
+        featurizer.set_params(**params)
+        pipeline = self.results['pipeline']
+        learning_curve = self.results['learning_curve']
+        model = MLModel(elements=elements,featurizer=featurizer,training_data_path=training_data_url,model = model_onnx,pipeline=pipeline,full_pipeline=pipeline_model, learning_curve=learning_curve)
+        return model
+
     def get_uf3(self, elements):
         """
         gets uf3 pair potentials
@@ -66,79 +117,6 @@ class MLRester(object):
         suburl = "UFCC/?element1=" + elements[0] + "&element2=" + elements[1]
         self.results = self._make_request(suburl)
         return self.results
-
-    def get_SVR(self, target_property, elements, best="test_MAE"):
-        """
-        Returns all the parameters of an SVR model for reconstruction
-        Parameters
-        ----------
-        target_property : str
-            Property for model to predict
-        elements : list
-            list of elements in string form e.g. ['Cd', 'Te']
-        best : str
-            metric for evaluating model
-        Returns
-        -------
-        all_params : dict
-            dictionary of query results
-        todo: implement best
-        """
-        suburl = (
-            "MLModel/?target_property="
-            + target_property
-            + "&element1="
-            + elements[0]
-            + "&element2="
-            + elements[1]
-        )
-
-        self.results = self._make_request(suburl)[0]
-        svr = self.results["svr"][27:]
-        self.results["svr"] = self._make_request(svr)
-        all_params = self._make_request(svr)
-        # print(all_params)
-        # model = MLModel().rebuild_SVR(model_params)
-        return all_params
-
-    def get_data(self, target_property, elements, model="SVR"):
-        """
-        simimlar to get SVR
-        Parameters
-        ----------
-        target_property : str
-            Property for model to predict
-        elements : list
-            list of elements in string form e.g. ['Cd', 'Te']
-        model : str
-            name of ml model
-        Returns
-        -------
-        all_params : dict
-            dictionary of query results
-
-        """
-        suburl = (
-            "MLModel/?target_property="
-            + target_property
-            + "&element1="
-            + elements[0]
-            + "&element2"
-            + elements[1]
-        )
-
-        self.results = self._make_request(suburl)[0]
-        data = self.results["data"]  # [27:]
-        # self.results["svr"] = self._make_request(svr)
-        svr = self.results["svr"][27:]
-        self.results["svr"] = self._make_request(svr)
-        all_params = self._make_request(svr)
-        i = 0
-        for struc in data:
-            all_params[i] = self._make_request(struc[27:])
-            i += 1
-        return all_params
-
 
 class MWRester(object):
     """"""
