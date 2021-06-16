@@ -4,7 +4,6 @@ Feature calculations
 
 import logging
 import inspect
-from deepchem.utils import get_print_threshold
 from typing import Any, Dict, Iterable, Tuple, Union, cast
 import numpy as np
 
@@ -105,7 +104,7 @@ class Featurizer(object):
                 value = "'" + value + "'"
             # for list
             if isinstance(value, list):
-                threshold = get_print_threshold()
+                threshold = 10
                 value = np.array2string(np.array(value), threshold=threshold)
             args_info += arg_name + "=" + str(value) + ", "
         return self.__class__.__name__ + "[" + args_info[:-2] + "]"
