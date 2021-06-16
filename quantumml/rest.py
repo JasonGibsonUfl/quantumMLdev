@@ -89,8 +89,8 @@ class MLRester(object):
             doi of model
         Returns
         -------
-        model : quantumml.sklearnModel.MLModel
-            returns model containing all training information
+        model : quantumml.models.sklearnModel.MLModel
+            returns quantumml model object containing all training information
         """
         suburl = "MachineLearningModel/?"
 

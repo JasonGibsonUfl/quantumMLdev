@@ -16,11 +16,13 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from .utils import *
 from typing import List
+from sklearn.base import TransformerMixin
+
 
 PymatgenStructure = Any
 
 
-class Global_RDF(MaterialStructureFeaturizer):
+class Global_RDF(MaterialStructureFeaturizer, TransformerMixin):
     """
     Calculate the global radial distribution function feature vector for crystals.
 
@@ -43,6 +45,7 @@ class Global_RDF(MaterialStructureFeaturizer):
         Parameters : list
             list of elements symbols
         """
+        TransformerMixin.__init__(self)
         self.elements = elements
         self.rdf_tup = calc_rdf_tup(elements)
         self.rcut = rcut
@@ -104,10 +107,15 @@ class Global_RDF(MaterialStructureFeaturizer):
             )  # Divide by number of AlphaSpec atoms in the unit cell to give the final partial RDF
             vec[index] = tempHist
 
-        vec = np.row_stack(
-            (vec[0], vec[1], vec[2])
-        )  # Combine all vectors to get RDFMatrix
+        vec = vec.flatten()
         return vec
+
+
+    def fit(self, x, y=None):
+        return self
+    def transform(self,x,y=None):
+        self.data_raw = np.asarray(self.featurize(x))
+        return self.data_raw
 
 
 class Global_ADF(MaterialStructureFeaturizer):

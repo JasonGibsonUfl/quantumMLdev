@@ -28,18 +28,20 @@ class Featurizer(object):
         self, datapoints: Iterable[Any], log_every_n: int = 1000
     ) -> np.ndarray:
         """Calculate features for datapoints.
+        
         Parameters
         ----------
         datapoints: Iterable[Any]
-          A sequence of objects that you'd like to featurize. Subclassses of
-          `Featurizer` should instantiate the `_featurize` method that featurizes
-          objects in the sequence.
+            A sequence of objects that you'd like to featurize. Subclassses of
+            `Featurizer` should instantiate the `_featurize` method that featurizes
+            objects in the sequence.
         log_every_n: int, default 1000
-          Logs featurization progress every `log_every_n` steps.
+            Logs featurization progress every `log_every_n` steps.
+            
         Returns
         -------
         np.ndarray
-          A numpy array containing a featurized representation of `datapoints`.
+            A numpy array containing a featurized representation of `datapoints`.
         """
         datapoints = list(datapoints)
         features = []
@@ -59,28 +61,32 @@ class Featurizer(object):
 
     def __call__(self, datapoints: Iterable[Any]):
         """Calculate features for datapoints.
+        
         Parameters
         ----------
         datapoints: Iterable[Any]
-          Any blob of data you like. Subclasss should instantiate this.
+            Any blob of data you like. Subclasss should instantiate this.
         """
         return self.featurize(datapoints)
 
     def _featurize(self, datapoint: Any):
         """Calculate features for a single datapoint.
+        
         Parameters
         ----------
         datapoint: Any
-          Any blob of data you like. Subclass should instantiate this.
+            Any blob of data you like. Subclass should instantiate this.
         """
         raise NotImplementedError("Featurizer is not defined.")
 
     def __repr__(self) -> str:
         """Convert self to repr representation.
+        
         Returns
         -------
         str
-          The string represents the class.
+            The string represents the class.
+            
         Examples
         --------
         >>> import deepchem as dc

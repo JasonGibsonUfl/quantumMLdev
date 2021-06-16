@@ -11,12 +11,12 @@ def calc_adf_tup(elements: List) -> List:
 
     Parameters
     ----------
-    elements : list
+    elements : List
         list of str elements
 
     Returns
     -------
-    adf_tup : list
+    adf_tup : List
         list of adf tuples
     """
     if len(elements) != 2:
@@ -50,6 +50,7 @@ def calc_rdf_tup(elements: List) -> List:
 def calc_mol_frac(elements: List, structure: PymatgenStructure) -> List:
     """
     Calculate the molar fraction of elements from pymatgen structure.
+    
     Parameters
     ----------
     struct: pymatgen.Structure
@@ -58,7 +59,7 @@ def calc_mol_frac(elements: List, structure: PymatgenStructure) -> List:
 
     Returns
     -------
-    molarFrac: list
+    molarFrac: List
         list of molar fraction for each element
     """
     molarFrac = []
@@ -76,12 +77,12 @@ def get_elements(tup: List) -> List:
 
     Parameters
     ----------
-    tup : list
+    tup : List
         tuple of elements
 
     Returns
     -------
-    elements : list
+    elements : List
         list of element objects
     """
     return [Element(element) for element in tup]
@@ -93,12 +94,12 @@ def get_indices(sites: List, specs: List) -> List:
 
     Parameters
     ----------
-    sites : list
+    sites : List
         list of PyMatGen periodic sites
 
     Returns
     -------
-    indices_ab : list
+    indices_ab : List
         list of indices corresponding to elements
     """
     indices = [
@@ -113,7 +114,7 @@ def contains_ab(indices_ab: List):
 
     Parameters
     ----------
-    indices_ab : list
+    indices_ab : List
         2D list of the indices of atom A and B
 
     Returns
