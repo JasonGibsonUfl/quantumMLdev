@@ -1,6 +1,7 @@
-API Documentation
-=================
+quantumml
+=========
 
-.. autosummary::
-   :toctree: autosummary
-      
+.. toctree::
+   :maxdepth: 7
+
+   quantumml

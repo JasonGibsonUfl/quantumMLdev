@@ -1,5 +1,4 @@
-"""
-rest.py
+"""rest.py
 quantumML is 
 
 Handles the primary functions
@@ -34,8 +33,10 @@ class MLRester(object):
     interface. The recommended way to use MLRester is with the "with" context
     manager to ensure that sessions are properly closed after
     usage::
+
         with MLRester() as mlr:
             do_something
+
     MLRester uses the "requests" package, which provides for HTTP connection
     pooling. All connections are made via https for security.
     """
@@ -185,10 +186,11 @@ class MWRester(object):
         todo: add support for elements and name
         Method to that queries materialsweb database and returns a list of dictionaries of calculations that
         fit the querries parameters. Additionally
+
         Parameters
         ----------
         band_gap_range : list
-        List of band gap range e.g. [min, max]
+            List of band gap range e.g. [min, max]
         formation_energy_range : list
             List of formation energy range e.g. [min, max]
         elements : list

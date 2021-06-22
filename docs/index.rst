@@ -13,8 +13,6 @@ Welcome to temp_test's documentation!
    getting_started
    api
 
-
-
 Indices and tables
 ==================
 

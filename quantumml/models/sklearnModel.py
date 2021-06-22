@@ -145,6 +145,32 @@ class MLModel:
             data_list = [data[k][key] for k in data.keys() for key in data[k].keys()]
             return data_list
 
+    def get_featurizer(self):
+        """
+        Returns the feturizer used to transform crystal structure into descriptor
+
+        Returns
+        -------
+        featurizer : quantumml.featurizer
+            returns featurizer
+
+        """
+        featurizer = self.featurizer
+        return featurizer
+
+    def get_onnx_model(self):
+        """
+        Returns the trained model in an onnx format
+
+        Returns
+        -------
+        model : onnx.onnx_ml_pb2.ModelProto
+            ONNX model
+
+        """
+        model = self.model
+        return model
+
     def get_full_pipeline(self):
         """
         Returns the full sklearn pipeline used to train model to allow users to modify the model

@@ -1,7 +1,6 @@
 """
 soap.py
 A short description of the project.
-
 """
 
 

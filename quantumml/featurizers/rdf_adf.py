@@ -24,14 +24,12 @@ PymatgenStructure = Any
 
 class Global_RDF(MaterialStructureFeaturizer, TransformerMixin):
     """
-    Calculate the global radial distribution function feature vector for crystals.
+    Calculate the global radial distribution function feature vector for crystals from [1]_.
 
     References
     ----------
-    .. [1] ref
+    .. [1] Kearnes, Steven, et al. "Molecular graph convolutions: moving beyond fingerprints." Journal of computer-aided molecular design 30.8 (2016): 595-608.
 
-    Examples
-    --------
     """
 
     def __init__(
@@ -120,11 +118,11 @@ class Global_RDF(MaterialStructureFeaturizer, TransformerMixin):
 
 class Global_ADF(MaterialStructureFeaturizer):
     """
-    Calculate the global radial distribution function feature vector for crystals.
+    Calculate the global radial distribution function feature vector for crystals [2]_.
 
     References
     ----------
-    .. [1] ref
+    .. [2] ref
 
     Examples
     --------
