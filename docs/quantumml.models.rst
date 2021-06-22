@@ -8,7 +8,6 @@ Subpackages
    :maxdepth: 7
 
    quantumml.models.sklearnModel
-   quantumml.models.uf3
 
 Submodules
 ----------

@@ -17,3 +17,4 @@ dependencies:
       - ase
       - scikit-learn
       - onnxruntime
+      - onnx
