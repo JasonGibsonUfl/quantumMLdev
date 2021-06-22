@@ -7,13 +7,13 @@ dependencies:
 
     # Package depends
   - numpy
-  - pymatgen
-  - dscribe
-  - ase
-  - scikit-learn
-  - onnxruntime
+
 
     # Pip-only installs
   - pip:
       - sphinx-autoapi
-
+      - pymatgen
+      - dscribe
+      - ase
+      - scikit-learn
+      - onnxruntime
