@@ -13,7 +13,7 @@ class MLModel:
 
     Attributes
     ----------
-    elemnts: list
+    elements: list
         list of elements in the models training set
     featurizer: quantumml.featurizers.Featurizer
         class used to transform poscar file to descriptor

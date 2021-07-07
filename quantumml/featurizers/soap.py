@@ -57,6 +57,7 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
         sigma: float = 0.125,
         average: str = "inner",
         periodic: bool = True,
+        convert: bool = True
         ):
         """
         Initiallize class
@@ -85,7 +86,9 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
             Valid options are:
                 * "off": No averaging.
                 * "inner": Averaging over sites before summing up the magnetic quantum numbers: :math:`p_{nn'l}^{Z_1,Z_2} \sim \sum_m (\\frac{1}{n} \sum_i c_{nlm}^{i, Z_1})^{*} (\\frac{1}{n} \sum_i c_{n'lm}^{i, Z_2})`
-                * "outer": Averaging over the power spectrum of different sites: :math:`p_{nn'l}^{Z_1,Z_2} \sim \\frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})`        
+                * "outer": Averaging over the power spectrum of different sites: :math:`p_{nn'l}^{Z_1,Z_2} \sim \\frac{1}{n} \sum_i \sum_m (c_{nlm}^{i, Z_1})^{*} (c_{n'lm}^{i, Z_2})`
+        convert : bool
+            If true convert pymatgen structures to ase.atoms
         """
         TransformerMixin.__init__(self)
         self.species = species
@@ -97,6 +100,7 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
         self.sigma = sigma
         self.average = average
         self.periodic = periodic
+        self.convert = convert
 
     def __str__(self):
         return "Soap"
@@ -126,9 +130,9 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
             sigma=self.sigma,
             average=self.average,
         )
-
-        adaptor = AseAtomsAdaptor()
-        struct = adaptor.get_atoms(struct)
+        if self.convert:
+            adaptor = AseAtomsAdaptor()
+            struct = adaptor.get_atoms(struct)
         features = soap.create(struct)
 
         features = np.asarray(features)
@@ -136,7 +140,6 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
 
     def fit(self, x, y=None):
         self.adaptor = AseAtomsAdaptor()
-
         self.soap = SOAP(
             species=self.species,
             periodic=self.periodic,
@@ -152,9 +155,11 @@ class SoapTransformer(MaterialStructureFeaturizer, TransformerMixin):
         return self
 
     def transform(self, x, y=None):
-
-        flattened_entry_list = [self.adaptor.get_atoms(struct) for struct in x]
-        self.soap_raw = self.soap.create(flattened_entry_list)
+        if self.convert:
+            flattened_entry_list = [self.adaptor.get_atoms(struct) for struct in x]
+            self.soap_raw = self.soap.create(flattened_entry_list)
+        else:
+            self.soap_raw = self.soap.create(x)
         return self.soap_raw
 
     def set_params(
